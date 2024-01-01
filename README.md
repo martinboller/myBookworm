@@ -14,3 +14,4 @@ Install some basics on Debian 12 Bookworm
 - Installs flatpaks: VS-Codium; BitWarden; Calibre; UngoogledChromium; UngoogledChromium-Codecs; Mattermost; Discord; FluentReader; Signal.
 - Several Debian APT-packages in the following categories: Network Tools, Forensics Tools, Systems Tools, and User Tools.
 - Adds the contrib, non-free, and firmware-non-free debian repositories.
+- Keyboard shortcuts for gnome-terminal (Super + t) and gnome-disks (Super + d)

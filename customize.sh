@@ -102,13 +102,13 @@ install_utils_apt() {
     export DEBIAN_FRONTEND=noninteractive;
     echo -e "\e[32m .... Installing some additional tools and utilities\e[0m";
     echo -e "\e[32m .... Installing network tools\e[0m";
-    sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng
+    sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng;
     echo -e "\e[32m .... Installing forensics tools\e[0m";
-    sudo apt-get -y -qq install forensics-extra testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk
+    sudo apt-get -y -qq install forensics-extra testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk;
     echo -e "\e[32m .... Installing system tools\e[0m";
-    sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip
+    sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor;
     echo -e "\e[32m .... Installing user utils and other tools\e[0m";
-    sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk git sshpass rclone rclone-browser
+    sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk git sshpass rclone rclone-browser;
 
     echo -e "\e[32m - install_utils_apt() finished\e[0m";
     /usr/bin/logger 'install_utils_apt() finished' -t 'Customizing Bookworm';
@@ -133,23 +133,23 @@ install_utils_flatpak() {
     /usr/bin/logger 'install_utils_flatpak()' -t 'Customizing Bookworm';
 
     echo -e "\e[36m ... Installing vs-codium\e[0m";
-    flatpak --assumeyes install com.vscodium.codium;
+    flatpak --assumeyes install com.vscodium.codium > /dev/null 2>&1;
     echo -e "\e[36m ... installing BitWarden\e[0m";
-    flatpak --assumeyes install com.bitwarden.desktop;
+    flatpak --assumeyes install com.bitwarden.desktop > /dev/null 2>&1;
     echo -e "\e[36m ... installing Calibre\e[0m";
-    flatpak --assumeyes install com.calibre_ebook.calibre;
+    flatpak --assumeyes install com.calibre_ebook.calibre > /dev/null 2>&1;
     echo -e "\e[36m ... installing ungoogled Chromium\e[0m";
-    flatpak --assumeyes install com.github.Eloston.UngoogledChromium;
+    flatpak --assumeyes install com.github.Eloston.UngoogledChromium > /dev/null 2>&1;
     echo -e "\e[36m ... installing Codecs for Chromium\e[0m";
-    flatpak --assumeyes install com.github.Eloston.UngoogledChromium.Codecs;
+    flatpak --assumeyes install com.github.Eloston.UngoogledChromium.Codecs > /dev/null 2>&1;
     echo -e "\e[36m ... installing Mattermost\e[0m";
-    flatpak --assumeyes install com.mattermost.Desktop;
+    flatpak --assumeyes install com.mattermost.Desktop > /dev/null 2>&1;
     echo -e "\e[36m ... installing Discord\e[0m";
-    flatpak --assumeyes install com.discordapp.Discord;
+    flatpak --assumeyes install com.discordapp.Discord > /dev/null 2>&1;
     echo -e "\e[36m ... installing Fluent Reader\e[0m";
-    flatpak --assumeyes install me.hyliu.fluentreader;
+    flatpak --assumeyes install me.hyliu.fluentreader > /dev/null 2>&1;
     echo -e "\e[36m ... installing Signal Desktop\e[0m";
-    flatpak --assumeyes install org.signal.Signal;
+    flatpak --assumeyes install org.signal.Signal > /dev/null 2>&1;
 
     echo -e "\e[32m - install_utils_flatpak() finished\e[0m";
     /usr/bin/logger 'install_utils_flatpak() finished' -t 'Customizing Bookworm';
@@ -187,13 +187,46 @@ configure_apt_repositories() {
     /usr/bin/logger 'configure_apt_respositories() finished' -t 'Customizing Bookworm';
 }
 
+configure_kb_shortcuts() {
+    echo -e "\e[32m - configure_kb_sortcuts()\e[0m";
+    /usr/bin/logger 'configure_kb_shortcuts()' -t 'Customizing Bookworm';
+
+    # Create custom keybindings myTerminal and myDisks
+    echo -e "\e[32m .... Create custom keybindings\e[0m";
+    gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/']"
+    echo -e "\e[32m .... \e[0m";
+    # Provide a name for the custom key myTerminal
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/ name 'Gnome-Term'
+    echo -e "\e[32m .... set keyboard combo to <Super> + t\e[0m";
+    # set keyboard combo to <Super> + t
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/ binding '<super>t'
+    echo -e "\e[32m .... set gnome-terminal as command to run\e[0m";
+    # set command to run
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/ command '/usr/bin/gnome-terminal'
+    echo -e "\e[32m .... Provide a name for the custom key myDisks\e[0m";
+    # Provide a name for the custom key myDisks
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ name 'Gnome-Disks'
+    echo -e "\e[32m .... set keyboard combo to <Super> + d\e[0m";
+    # set keyboard combo to <Super> + d
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ binding '<super>d'
+    echo -e "\e[32m .... set gnome-disks as command to run\e[0m";
+    # set command to run
+    gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ command '/usr/bin/gnome-disks'
+    
+    echo -e "\e[32m - configure_kb_sortcuts()\e[0m";
+    /usr/bin/logger 'configure_kb_shortcuts()' -t 'Customizing Bookworm';
+}
+
 #################################################################################################################
 ## Main Routine                                                                                                 #
 #################################################################################################################
 main() {
     /usr/bin/logger 'main() routine starting' -t 'Customizing Bookworm';
+
+    # Show intro message
     do_intro;
 
+    # Configure variables from .env-file
     configure_env;
 
     if id -nG "$USERNAME" | grep -qw "$SUDOGROUP"; then
@@ -205,6 +238,7 @@ main() {
 
         install_updates;
 
+        # Flatpak
         if [ "$FLATPAK_INSTALL" == "Yes" ]; then
             install_flatpak;
             if [ "$FLATPAK_UTILS" == "Yes" ]; then
@@ -212,16 +246,24 @@ main() {
             fi
         fi
 
+        # Debian APT packages
         if [ "$APT_UTILS" == "Yes" ]; then
             install_utils_apt;
         fi
+        
+        # Gnome Keyboard Shortcuts
+        if [ "$KB_SHORTCUTS" == "Yes" ]; then
+            configure_kb_shortcuts;
+        fi
 
+    # Cannot sudo
     else
         echo -e "\e[1;36m$USERNAME does not belong to group $SUDOGROUP, please provide root password\e[0m"
         configure_sudo;
         echo -e "\e[1;31mYou must logout and then back in again and execute this script once more\e[0m"
     fi
 
+    # Show finishing message
     do_outro;
 
     /usr/bin/logger 'main() finished' -t 'Customizing Bookworm';
