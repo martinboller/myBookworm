@@ -109,13 +109,15 @@ install_utils_apt() {
     export DEBIAN_FRONTEND=noninteractive;
     echo -e "\e[36m .... Installing some additional tools and utilities\e[0m";
     echo -e "\e[36m .... Installing network tools\e[0m";
-    sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng;
+    sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng whois dnsutils;
     echo -e "\e[36m .... Installing forensics tools\e[0m";
     sudo apt-get -y -qq install forensics-extra testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk;
     echo -e "\e[36m .... Installing system tools\e[0m";
     sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop;
     echo -e "\e[36m .... Installing user utils and other tools\e[0m";
-    sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk git sshpass rclone rclone-browser;
+    sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk sshpass rclone rclone-browser 
+    echo -e "\e[36m .... Installing development tools\e[0m";
+    sudo apt-get -y -qq install git devscripts build-essential software-properties-common gnupg2 dirmngr;
 
     echo -e "\e[32m - install_utils_apt() finished\e[0m";
     /usr/bin/logger 'install_utils_apt() finished' -t 'Customizing Bookworm';
@@ -157,14 +159,14 @@ install_utils_flatpak() {
     flatpak --assumeyes install me.hyliu.fluentreader > /dev/null 2>&1;
     echo -e "\e[36m .... installing Signal Desktop\e[0m";
     flatpak --assumeyes install org.signal.Signal > /dev/null 2>&1;
-
-    echo -e "\e[32m - install_utils_flatpak() finished\e[0m";
+    echo -e "\e[36m .... installing ImHex Hex Editor\e[0m";
+    flatpak --assumeyes install net.werwolv.ImHex > /dev/null 2>&1;
     /usr/bin/logger 'install_utils_flatpak() finished' -t 'Customizing Bookworm';
 }
 
 install_gnome_dash_to_panel() {
-    echo -e "\e[32m - install_gnome_dash_to_panel()\e[0m";
-    /usr/bin/logger 'install_gnome_dash_to_panel()' -t 'Customizing Bookworm';
+    echo -e "\e[36m .... installing Zoom[0m";
+    flatpak --assumeyes install us.zoom.Zoom > /dev/null 2>&1;
 
     echo -e "\e[36m .... installing the Dash-to-Panel Gnome Extension\e[0m";
     # Requires log out then logon
