@@ -130,7 +130,7 @@ install_utils_apt() {
         echo -e "\e[36m .... Installing forensics tools\e[0m";
         sudo apt-get -y -qq install forensics-all > /dev/null 2>&1;
         sudo apt-get -y -qq install testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk > /dev/null 2>&1;
-    if
+    fi
 
     # SYSTOOLS_INSTALL
     if [ "$SYSTOOLS_INSTALL" == "Yes" ]; then
