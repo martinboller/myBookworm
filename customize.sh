@@ -125,9 +125,9 @@ install_flatpak() {
     echo -e "\e[32m - install_flatpak()\e[0m";
     /usr/bin/logger 'install_flatpak()' -t 'Customizing Bookworm';
 
-    echo -e "\e[36m ... Installing flatpak and gnome software plugin\e[0m";
+    echo -e "\e[36m .... Installing flatpak and gnome software plugin\e[0m";
     sudo apt-get -qq -y install flatpak gnome-software-plugin-flatpak;
-    echo -e "\e[36m ... Adding flathub repository\e[0m";
+    echo -e "\e[36m .... Adding flathub repository\e[0m";
     sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
     sync;
     
@@ -139,23 +139,23 @@ install_utils_flatpak() {
     echo -e "\e[32m - install_utils_flatpak()\e[0m";
     /usr/bin/logger 'install_utils_flatpak()' -t 'Customizing Bookworm';
 
-    echo -e "\e[36m ... Installing vs-codium\e[0m";
+    echo -e "\e[36m .... Installing vs-codium\e[0m";
     flatpak --assumeyes install com.vscodium.codium > /dev/null 2>&1;
-    echo -e "\e[36m ... installing BitWarden\e[0m";
+    echo -e "\e[36m .... installing BitWarden\e[0m";
     flatpak --assumeyes install com.bitwarden.desktop > /dev/null 2>&1;
-    echo -e "\e[36m ... installing Calibre\e[0m";
+    echo -e "\e[36m .... installing Calibre\e[0m";
     flatpak --assumeyes install com.calibre_ebook.calibre > /dev/null 2>&1;
-    echo -e "\e[36m ... installing ungoogled Chromium\e[0m";
+    echo -e "\e[36m .... installing ungoogled Chromium\e[0m";
     flatpak --assumeyes install com.github.Eloston.UngoogledChromium > /dev/null 2>&1;
-    echo -e "\e[36m ... installing Codecs for Chromium\e[0m";
+    echo -e "\e[36m .... installing Codecs for Chromium\e[0m";
     flatpak --assumeyes install com.github.Eloston.UngoogledChromium.Codecs > /dev/null 2>&1;
-    echo -e "\e[36m ... installing Mattermost\e[0m";
+    echo -e "\e[36m .... installing Mattermost\e[0m";
     flatpak --assumeyes install com.mattermost.Desktop > /dev/null 2>&1;
-    echo -e "\e[36m ... installing Discord\e[0m";
+    echo -e "\e[36m .... installing Discord\e[0m";
     flatpak --assumeyes install com.discordapp.Discord > /dev/null 2>&1;
-    echo -e "\e[36m ... installing Fluent Reader\e[0m";
+    echo -e "\e[36m .... installing Fluent Reader\e[0m";
     flatpak --assumeyes install me.hyliu.fluentreader > /dev/null 2>&1;
-    echo -e "\e[36m ... installing Signal Desktop\e[0m";
+    echo -e "\e[36m .... installing Signal Desktop\e[0m";
     flatpak --assumeyes install org.signal.Signal > /dev/null 2>&1;
 
     echo -e "\e[32m - install_utils_flatpak() finished\e[0m";
@@ -212,7 +212,7 @@ configure_kb_shortcuts() {
     # Create custom keybindings myTerminal and myDisks
     echo -e "\e[32m .... Create custom keybindings\e[0m";
     gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/']"
-    echo -e "\e[32m .... \e[0m";
+    echo -e "\e[32m .... Provide a name for the custom key myTerminal\e[0m";
     # Provide a name for the custom key myTerminal
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/ name 'Gnome-Term'
     echo -e "\e[32m .... set keyboard combo to <Super> + t\e[0m";
