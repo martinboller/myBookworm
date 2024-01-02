@@ -62,23 +62,23 @@ configure_env() {
     echo -e "\e[1;35mInstall Flatpak Utilities $FLATPAK_UTILS\e[0m"
     echo -e "\e[1;35mInstall Debian Packages? $APT_UTILS\e[0m"
     echo -e "\e[1;35mConfigure Minimize and Maximize buttons on Windows? $MM_BUTTONS_CONFIGURE\e[0m"
-    echo -e "\e[1;35m-------------------------------------------------------------------\e[0m"
-    
+    echo -e    
     # OS Version freedesktop.org and systemd
     . /etc/os-release
     export OS=$NAME
     export VER=$VERSION_ID
     export CODENAME=$VERSION_CODENAME
     /usr/bin/logger "Operating System: $OS Version: $VER: $CODENAME" -t 'gce-23.1.0';
-    echo -e "\e[1;36m .... Operating System: $OS Version: $VER: $CODENAME\e[0m";
-    echo -e "\e[32m .... Environment configured\e[0m";
+    echo -e "\e[1;36mOperating System: $OS Version: $VER: $CODENAME\e[0m";
 
     if [ "$VER" == "$DEBIAN_SUPPORTED" ]; then
-        echo -e "\e[1;36m....Running Debian $VER codename $CODENAME. All good to go\e[0m"
+        echo -e "\e[1;36mRunning Debian $VER codename $CODENAME. All good to go\e[0m"
     else
-        echo -e "\e[1;31m  .... NOT running Debian $DEBIAN_SUPPORTED, but $OS, $VER codename $CODENAME. Script shall exit\e[0m"
+        echo -e "\e[1;31mNOT running Debian $DEBIAN_SUPPORTED, but $OS, $VER codename $CODENAME. Script shall exit\e[0m"
         exit 1;
     fi
+    echo -e "\e[1;35m-------------------------------------------------------------------\e[0m"
+    echo -e "\e[36mEnvironment configured\e[0m";
 
     echo -e "\e[32m - configure_env() finished\e[0m";
     /usr/bin/logger 'configure_env() finished' -t 'Customizing Bookworm';
@@ -107,14 +107,14 @@ install_utils_apt() {
     /usr/bin/logger 'install_utils_apt()' -t 'Customizing Bookworm';
 
     export DEBIAN_FRONTEND=noninteractive;
-    echo -e "\e[32m .... Installing some additional tools and utilities\e[0m";
-    echo -e "\e[32m .... Installing network tools\e[0m";
+    echo -e "\e[36m .... Installing some additional tools and utilities\e[0m";
+    echo -e "\e[36m .... Installing network tools\e[0m";
     sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng;
-    echo -e "\e[32m .... Installing forensics tools\e[0m";
+    echo -e "\e[36m .... Installing forensics tools\e[0m";
     sudo apt-get -y -qq install forensics-extra testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk;
-    echo -e "\e[32m .... Installing system tools\e[0m";
+    echo -e "\e[36m .... Installing system tools\e[0m";
     sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop;
-    echo -e "\e[32m .... Installing user utils and other tools\e[0m";
+    echo -e "\e[36m .... Installing user utils and other tools\e[0m";
     sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk git sshpass rclone rclone-browser;
 
     echo -e "\e[32m - install_utils_apt() finished\e[0m";
@@ -166,6 +166,7 @@ install_gnome_dash_to_panel() {
     echo -e "\e[32m - install_gnome_dash_to_panel()\e[0m";
     /usr/bin/logger 'install_gnome_dash_to_panel()' -t 'Customizing Bookworm';
 
+    echo -e "\e[36m .... installing the Dash-to-Panel Gnome Extension\e[0m";
     # Requires log out then logon
     sudo apt-get -y -qq install gnome-shell-extension-dash-to-panel;
 
@@ -177,6 +178,7 @@ configure_nix() {
     echo -e "\e[32m - configure_nix()\e[0m";
     /usr/bin/logger 'configure_nix()' -t 'Customizing Bookworm';
 
+    echo -e "\e[36m .... Configuring Linux changes\e[0m";
     # Currently nothing to do
 
     echo -e "\e[32m - configure_nix() finished\e[0m";
@@ -187,7 +189,9 @@ configure_sudo() {
     echo -e "\e[32m - configure_sudo()\e[0m";
     /usr/bin/logger 'configure_sudo()' -t 'Customizing Bookworm';
     
-    su root /sbin/addgroup $USERNAME sudo
+    echo -e "\e[36m .... Adding user: $USERNAME to group $SUDOGROUP\e[0m";
+    echo -e "\e[36m .... You must provide the root password, then logout and rerun script\e[0m";
+    su root /sbin/addgroup $USERNAME $SUDOGROUP
     
     echo -e "\e[32m - configure_sudo() finished\e[0m";
     /usr/bin/logger 'configure_sudo() finished' -t 'Customizing Bookworm';
@@ -197,7 +201,7 @@ configure_apt_repositories() {
     echo -e "\e[32m - configure_apt_repositories()\e[0m";
     /usr/bin/logger 'configure_apt_respositories()' -t 'Customizing Bookworm';
 
-    echo -e "\e[32m .... adding contrib, non-free, and non-free-firmware repositories to sources.list\e[0m";
+    echo -e "\e[36m .... adding contrib, non-free, and non-free-firmware repositories to sources.list\e[0m";
     sudo sed -ie "s/main/main contrib non-free non-free-firmware/" /etc/apt/sources.list
     sudo apt-get -qq update;
     
@@ -210,24 +214,24 @@ configure_kb_shortcuts() {
     /usr/bin/logger 'configure_kb_shortcuts()' -t 'Customizing Bookworm';
 
     # Create custom keybindings myTerminal and myDisks
-    echo -e "\e[32m .... Create custom keybindings\e[0m";
+    echo -e "\e[36m .... Create custom keybindings\e[0m";
     gsettings set org.gnome.settings-daemon.plugins.media-keys custom-keybindings "['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/', '/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/']"
-    echo -e "\e[32m .... Provide a name for the custom key myTerminal\e[0m";
+    echo -e "\e[36m .... Provide a name for the custom key myTerminal\e[0m";
     # Provide a name for the custom key myTerminal
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/ name 'Gnome-Term'
-    echo -e "\e[32m .... set keyboard combo to <Super> + t\e[0m";
+    echo -e "\e[36m .... set keyboard combo to <Super> + t\e[0m";
     # set keyboard combo to <Super> + t
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/ binding '<super>t'
-    echo -e "\e[32m .... set gnome-terminal as command to run\e[0m";
+    echo -e "\e[36m .... set gnome-terminal as command to run\e[0m";
     # set command to run
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myTerminal/ command '/usr/bin/gnome-terminal'
-    echo -e "\e[32m .... Provide a name for the custom key myDisks\e[0m";
+    echo -e "\e[36m .... Provide a name for the custom key myDisks\e[0m";
     # Provide a name for the custom key myDisks
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ name 'Gnome-Disks'
-    echo -e "\e[32m .... set keyboard combo to <Super> + d\e[0m";
+    echo -e "\e[36m .... set keyboard combo to <Super> + d\e[0m";
     # set keyboard combo to <Super> + d
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ binding '<super>d'
-    echo -e "\e[32m .... set gnome-disks as command to run\e[0m";
+    echo -e "\e[36m .... set gnome-disks as command to run\e[0m";
     # set command to run
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ command '/usr/bin/gnome-disks'
     
@@ -239,6 +243,7 @@ configure_min_max_buttons() {
     echo -e "\e[32m - configure_min_max_buttons()\e[0m";
     /usr/bin/logger 'configure_min_max_buttons()' -t 'Customizing Bookworm';
 
+    echo -e "\e[36m .... Configuring GNOME Windows Manager to show minimize and maximize buttons\e[0m";
     gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
 
     echo -e "\e[32m - configure_min_max_buttons() finished\e[0m";
