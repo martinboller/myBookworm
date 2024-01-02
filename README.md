@@ -12,6 +12,8 @@ Install some basics on Debian 12 Bookworm
 ### 2024-01-02 - Dash to panel ###
  - Installing the Dash-to-Panel Gnome Extension
  - Adding minimize and maximize buttons to windows
+ - Can install Powershell (default No in .env for libre reasons)
+ **Note**: Microsoft Packages Repo for Bookworm does not contain Powershell, see MICROSOFT_APT_WORKAROUND in .env and shell script
  
 ### 2024-01-01 - Initial version ###
 - Adds the currently logged on user to the sudo group (if necessary)

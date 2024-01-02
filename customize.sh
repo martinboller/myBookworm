@@ -52,6 +52,11 @@ configure_env() {
     
     # Configure environment from .env file
     set -a; source $SCRIPT_DIR/.env;
+    # Get GNOME Version
+    export GNOME_VERSION="$(gnome-shell --version | awk '{print $3}')"
+    export GNOME_VERSION_MAJOR="$(gnome-shell --version | awk '{print $3}' | awk -F "." '{print $1}')"
+    export GNOME_VERSION_MINOR="$(gnome-shell --version | awk '{print $3}' | awk -F "." '{print $2}')"
+  
     echo -e "\e[1;35m-------------------------------------------------------------------\e[0m"
     echo -e "\e[1;35menv file version $ENV_VERSION\e[0m"
     echo -e
@@ -62,14 +67,20 @@ configure_env() {
     echo -e "\e[1;35mInstall Flatpak Utilities $FLATPAK_UTILS\e[0m"
     echo -e "\e[1;35mInstall Debian Packages? $APT_UTILS\e[0m"
     echo -e "\e[1;35mConfigure Minimize and Maximize buttons on Windows? $MM_BUTTONS_CONFIGURE\e[0m"
-    echo -e    
+    echo -e
+    echo -e "\e[1;35mGNOME version: $GNOME_VERSION\e[0m"
+    #echo -e "\e[1;35mGNOME version major: $GNOME_VERSION_MAJOR\e[0m"
+    #echo -e "\e[1;35mGNOME version minor: $GNOME_VERSION_MINOR\e[0m"
+
     # OS Version freedesktop.org and systemd
     . /etc/os-release
     export OS=$NAME
     export VER=$VERSION_ID
     export CODENAME=$VERSION_CODENAME
+    echo -e "\e[1;35mOperating System: $OS Version: $VER: $CODENAME\e[0m";
+    echo -e "\e[1;35m-------------------------------------------------------------------\e[0m"
+    echo -e
     /usr/bin/logger "Operating System: $OS Version: $VER: $CODENAME" -t 'gce-23.1.0';
-    echo -e "\e[1;36mOperating System: $OS Version: $VER: $CODENAME\e[0m";
 
     if [ "$VER" == "$DEBIAN_SUPPORTED" ]; then
         echo -e "\e[1;36mRunning Debian $VER codename $CODENAME. All good to go\e[0m"
@@ -77,7 +88,6 @@ configure_env() {
         echo -e "\e[1;31mNOT running Debian $DEBIAN_SUPPORTED, but $OS, $VER codename $CODENAME. Script shall exit\e[0m"
         exit 1;
     fi
-    echo -e "\e[1;35m-------------------------------------------------------------------\e[0m"
     echo -e "\e[36mEnvironment configured\e[0m";
 
     echo -e "\e[32m - configure_env() finished\e[0m";
@@ -108,16 +118,20 @@ install_utils_apt() {
 
     export DEBIAN_FRONTEND=noninteractive;
     echo -e "\e[36m .... Installing some additional tools and utilities\e[0m";
+
     echo -e "\e[36m .... Installing network tools\e[0m";
-    sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng whois dnsutils;
+    sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng whois dnsutils > /dev/null 2>&1;
     echo -e "\e[36m .... Installing forensics tools\e[0m";
-    sudo apt-get -y -qq install forensics-extra testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk;
+    # sudo apt-get -y -qq install forensics-all > /dev/null 2>&1;
+    sudo apt-get -y -qq install forensics-all testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk > /dev/null 2>&1;
     echo -e "\e[36m .... Installing system tools\e[0m";
-    sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop;
+    sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop > /dev/null 2>&1;
     echo -e "\e[36m .... Installing user utils and other tools\e[0m";
-    sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk sshpass rclone rclone-browser 
+    sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk sshpass rclone rclone-browser > /dev/null 2>&1;
     echo -e "\e[36m .... Installing development tools\e[0m";
-    sudo apt-get -y -qq install git devscripts build-essential software-properties-common gnupg2 dirmngr;
+    sudo apt-get -y -qq install git devscripts build-essential software-properties-common gnupg2 dirmngr --install-recommends > /dev/null 2>&1;
+    echo -e "\e[36m .... Installing Python tools\e[0m";   
+    sudo apt-get -y -qq install python3 python3-pip python3-setuptools python3-gnupg python3-venv > /dev/null 2>&1;
 
     echo -e "\e[32m - install_utils_apt() finished\e[0m";
     /usr/bin/logger 'install_utils_apt() finished' -t 'Customizing Bookworm';
@@ -161,12 +175,20 @@ install_utils_flatpak() {
     flatpak --assumeyes install org.signal.Signal > /dev/null 2>&1;
     echo -e "\e[36m .... installing ImHex Hex Editor\e[0m";
     flatpak --assumeyes install net.werwolv.ImHex > /dev/null 2>&1;
+    echo -e "\e[36m .... installing Bless Hex Editor\e[0m";
+    flatpak --assumeyes install com.github.afrantzis.Bless > /dev/null 2>&1;
+    echo -e "\e[36m .... installing Authenticator App\e[0m";
+    flatpak --assumeyes install com.belmoussaoui.Authenticator > /dev/null 2>&1;
+    echo -e "\e[36m .... installing Zoom\e[0m";
+    flatpak --assumeyes install us.zoom.Zoom > /dev/null 2>&1;
+
+    echo -e "\e[32m - install_utils_flatpak() finished\e[0m";
     /usr/bin/logger 'install_utils_flatpak() finished' -t 'Customizing Bookworm';
 }
 
 install_gnome_dash_to_panel() {
-    echo -e "\e[36m .... installing Zoom[0m";
-    flatpak --assumeyes install us.zoom.Zoom > /dev/null 2>&1;
+    echo -e "\e[32m - install_gnome_dash_to_panel()\e[0m";
+    /usr/bin/logger 'install_gnome_dash_to_panel()' -t 'Customizing Bookworm';
 
     echo -e "\e[36m .... installing the Dash-to-Panel Gnome Extension\e[0m";
     # Requires log out then logon
@@ -209,6 +231,48 @@ configure_apt_repositories() {
     
     echo -e "\e[32m - configure_apt_repositories() finished\e[0m";
     /usr/bin/logger 'configure_apt_respositories() finished' -t 'Customizing Bookworm';
+}
+
+configure_microsoft_apt_repository() {
+    echo -e "\e[32m - configure_microsoft_apt_repository()\e[0m";
+    /usr/bin/logger 'configure_microsoft_apt_respository()' -t 'Customizing Bookworm';
+
+    echo -e "\e[36m .... adding packages-microsoft-prod.deb to sources.list\e[0m";
+    # Download the Microsoft repository GPG keys
+    echo -e "\e[36m .... Download the Microsoft repository GPG keys\e[0m";
+    wget -q https://packages.microsoft.com/config/debian/$VER/packages-microsoft-prod.deb
+    # Register the Microsoft repository GPG keys
+    echo -e "\e[36m .... Register the Microsoft repository GPG keys\e[0m";
+    sudo dpkg -i packages-microsoft-prod.deb  > /dev/null 2>&1;
+    # Delete the Microsoft repository GPG keys file
+    echo -e "\e[36m .... Delete the Microsoft repository GPG keys file\e[0m";
+    rm packages-microsoft-prod.deb > /dev/null 2>&1;
+
+    if [ "$MICROSOFT_APT_WORKAROUND" == "Yes" ]; then
+        # Correct the repo to 11/Bullseye as 12/Bookworm stuff is mostly empty because Microsoft
+        echo -e "\e[31m .... Correct the repo to 11/Bullseye as 12/Bookworm stuff is mostly empty because Microsoft\e[0m";
+        echo -e "\e[31m .... This is BAD, and can hopefully be changed soon\e[0m"
+        sudo sed -i "s/$VER/11/" /etc/apt/sources.list.d/microsoft-prod.list
+        sudo sed -i "s/$CODENAME/bullseye/" /etc/apt/sources.list.d/microsoft-prod.list
+    fi
+
+    # Update the list of packages after we added packages.microsoft.com
+    sudo apt-get -qq update
+
+    echo -e "\e[32m - configure_microsoft_apt_repository() finished\e[0m";
+    /usr/bin/logger 'configure_microsoft_apt_respository() finished' -t 'Customizing Bookworm';
+}
+
+install_pwsh() {
+    echo -e "\e[32m - install_pwsh()\e[0m";
+    /usr/bin/logger 'install_pwsh()' -t 'Customizing Bookworm';
+
+    # Install PowerShell
+    echo -e "\e[36m .... Installing Powershell\e[0m";
+    sudo apt-get -qq -y install powershell
+
+    echo -e "\e[32m - install_pwsh() finished\e[0m";
+    /usr/bin/logger 'install_pwsh() finished' -t 'Customizing Bookworm';
 }
 
 configure_kb_shortcuts() {
@@ -308,6 +372,15 @@ main() {
         # Gnome show minimize and maximize buttons
         if [ "$MM_BUTTONS_CONFIGURE" == "Yes" ]; then
             configure_min_max_buttons;
+        fi
+
+        # Microsoft Debian Packages and PowerShell
+        if [ "$MICROSOFT_APT" == "Yes" ]; then
+            configure_microsoft_apt_repository;
+
+            if [ "$PWSH_INSTALL" == "Yes" ]; then
+                install_pwsh;
+            fi
         fi
 
     # Cannot sudo
