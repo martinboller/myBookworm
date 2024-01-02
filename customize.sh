@@ -6,7 +6,7 @@
 #                                                                   #
 # Email:        martin@bollers.dk                                   #
 # Last Update:  2023-12-30                                          #
-# Version:      1.00                                                #
+# Version:      1.50                                                #
 #                                                                   #
 # Changes:  Tested on Debian 12 (Bookworm)                          #
 #                                                                   #
@@ -119,19 +119,42 @@ install_utils_apt() {
     export DEBIAN_FRONTEND=noninteractive;
     echo -e "\e[36m .... Installing some additional tools and utilities\e[0m";
 
-    echo -e "\e[36m .... Installing network tools\e[0m";
-    sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng whois dnsutils > /dev/null 2>&1;
-    echo -e "\e[36m .... Installing forensics tools\e[0m";
-    # sudo apt-get -y -qq install forensics-all > /dev/null 2>&1;
-    sudo apt-get -y -qq install forensics-all testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk > /dev/null 2>&1;
-    echo -e "\e[36m .... Installing system tools\e[0m";
-    sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop > /dev/null 2>&1;
-    echo -e "\e[36m .... Installing user utils and other tools\e[0m";
-    sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk sshpass rclone rclone-browser > /dev/null 2>&1;
-    echo -e "\e[36m .... Installing development tools\e[0m";
-    sudo apt-get -y -qq install git devscripts build-essential software-properties-common gnupg2 dirmngr --install-recommends > /dev/null 2>&1;
-    echo -e "\e[36m .... Installing Python tools\e[0m";   
-    sudo apt-get -y -qq install python3 python3-pip python3-setuptools python3-gnupg python3-venv > /dev/null 2>&1;
+    # NETTOOLS_INSTALL
+    if [ "$NETTOOLS_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... Installing network tools\e[0m";
+        sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng whois dnsutils > /dev/null 2>&1;
+    fi
+
+    # FORTOOLS_INSTALL
+    if [ "$FORTOOLS_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... Installing forensics tools\e[0m";
+        sudo apt-get -y -qq install forensics-all > /dev/null 2>&1;
+        sudo apt-get -y -qq install testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk > /dev/null 2>&1;
+    if
+
+    # SYSTOOLS_INSTALL
+    if [ "$SYSTOOLS_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... Installing system tools\e[0m";
+        sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop > /dev/null 2>&1;
+    fi
+
+    # USERTOOLS_INSTALL
+    if [ "$USERTOOLS_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... Installing user utils and other tools\e[0m";
+        sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk sshpass rclone rclone-browser tldr > /dev/null 2>&1;
+    fi
+
+    # DEVTOOLS_INSTALL
+    if [ "$DEVTOOLS_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... Installing development tools\e[0m";
+        sudo apt-get -y -qq install git devscripts build-essential software-properties-common gnupg2 dirmngr --install-recommends > /dev/null 2>&1;
+    fi
+    
+    # PYTHON_INSTALL
+    if [ "$PYTHON_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... Installing Python tools\e[0m";   
+        sudo apt-get -y -qq install python3 python3-pip python3-setuptools python3-gnupg python3-venv > /dev/null 2>&1;
+    fi
 
     echo -e "\e[32m - install_utils_apt() finished\e[0m";
     /usr/bin/logger 'install_utils_apt() finished' -t 'Customizing Bookworm';
@@ -155,33 +178,40 @@ install_utils_flatpak() {
     echo -e "\e[32m - install_utils_flatpak()\e[0m";
     /usr/bin/logger 'install_utils_flatpak()' -t 'Customizing Bookworm';
 
-    echo -e "\e[36m .... Installing vs-codium\e[0m";
-    flatpak --assumeyes install com.vscodium.codium > /dev/null 2>&1;
-    echo -e "\e[36m .... installing BitWarden\e[0m";
-    flatpak --assumeyes install com.bitwarden.desktop > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Calibre\e[0m";
-    flatpak --assumeyes install com.calibre_ebook.calibre > /dev/null 2>&1;
-    echo -e "\e[36m .... installing ungoogled Chromium\e[0m";
-    flatpak --assumeyes install com.github.Eloston.UngoogledChromium > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Codecs for Chromium\e[0m";
-    flatpak --assumeyes install com.github.Eloston.UngoogledChromium.Codecs > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Mattermost\e[0m";
-    flatpak --assumeyes install com.mattermost.Desktop > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Discord\e[0m";
-    flatpak --assumeyes install com.discordapp.Discord > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Fluent Reader\e[0m";
-    flatpak --assumeyes install me.hyliu.fluentreader > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Signal Desktop\e[0m";
-    flatpak --assumeyes install org.signal.Signal > /dev/null 2>&1;
-    echo -e "\e[36m .... installing ImHex Hex Editor\e[0m";
-    flatpak --assumeyes install net.werwolv.ImHex > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Bless Hex Editor\e[0m";
-    flatpak --assumeyes install com.github.afrantzis.Bless > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Authenticator App\e[0m";
-    flatpak --assumeyes install com.belmoussaoui.Authenticator > /dev/null 2>&1;
-    echo -e "\e[36m .... installing Zoom\e[0m";
-    flatpak --assumeyes install us.zoom.Zoom > /dev/null 2>&1;
+    # FP_DEVTOOLS_INSTALL
+    if [ "$FP_DEVTOOLS_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... Installing vs-codium\e[0m";
+        flatpak --assumeyes install com.vscodium.codium > /dev/null 2>&1;
+        echo -e "\e[36m .... installing ImHex Hex Editor\e[0m";
+        flatpak --assumeyes install net.werwolv.ImHex > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Bless Hex Editor\e[0m";
+        flatpak --assumeyes install com.github.afrantzis.Bless > /dev/null 2>&1;
+    fi
 
+    # FP_USERTOOLS_INSTALL
+    if [ "$FP_USERTOOLS_INSTALL" == "Yes" ]; then
+        echo -e "\e[36m .... installing BitWarden\e[0m";
+        flatpak --assumeyes install com.bitwarden.desktop > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Calibre\e[0m";
+        flatpak --assumeyes install com.calibre_ebook.calibre > /dev/null 2>&1;
+        echo -e "\e[36m .... installing ungoogled Chromium\e[0m";
+        flatpak --assumeyes install com.github.Eloston.UngoogledChromium > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Codecs for Chromium\e[0m";
+        flatpak --assumeyes install com.github.Eloston.UngoogledChromium.Codecs > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Mattermost\e[0m";
+        flatpak --assumeyes install com.mattermost.Desktop > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Discord\e[0m";
+        flatpak --assumeyes install com.discordapp.Discord > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Fluent Reader\e[0m";
+        flatpak --assumeyes install me.hyliu.fluentreader > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Signal Desktop\e[0m";
+        flatpak --assumeyes install org.signal.Signal > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Authenticator App\e[0m";
+        flatpak --assumeyes install com.belmoussaoui.Authenticator > /dev/null 2>&1;
+        echo -e "\e[36m .... installing Zoom\e[0m";
+        flatpak --assumeyes install us.zoom.Zoom > /dev/null 2>&1;
+    fi
+    
     echo -e "\e[32m - install_utils_flatpak() finished\e[0m";
     /usr/bin/logger 'install_utils_flatpak() finished' -t 'Customizing Bookworm';
 }
@@ -276,7 +306,7 @@ install_pwsh() {
 }
 
 configure_kb_shortcuts() {
-    echo -e "\e[32m - configure_kb_sortcuts()\e[0m";
+    echo -e "\e[32m - configure_kb_shortcuts()\e[0m";
     /usr/bin/logger 'configure_kb_shortcuts()' -t 'Customizing Bookworm';
 
     # Create custom keybindings myTerminal and myDisks
@@ -301,8 +331,8 @@ configure_kb_shortcuts() {
     # set command to run
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ command '/usr/bin/gnome-disks'
     
-    echo -e "\e[32m - configure_kb_sortcuts()\e[0m";
-    /usr/bin/logger 'configure_kb_shortcuts()' -t 'Customizing Bookworm';
+    echo -e "\e[32m - configure_kb_shortcuts() finshed\e[0m";
+    /usr/bin/logger 'configure_kb_shortcuts() finished' -t 'Customizing Bookworm';
 }
 
 configure_min_max_buttons() {
