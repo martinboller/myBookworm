@@ -167,7 +167,7 @@ install_gnome_dash_to_panel() {
     /usr/bin/logger 'install_gnome_dash_to_panel()' -t 'Customizing Bookworm';
 
     # Requires log out then logon
-    apt-get -y -qq install gnome-shell-extension-dash-to-panel;
+    sudo apt-get -y -qq install gnome-shell-extension-dash-to-panel;
 
     echo -e "\e[32m - install_gnome_dash_to_panel() finished\e[0m";
     /usr/bin/logger 'install_gnome_dash_to_panel() finished' -t 'Customizing Bookworm';
