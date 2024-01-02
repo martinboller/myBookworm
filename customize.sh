@@ -52,10 +52,17 @@ configure_env() {
     
     # Configure environment from .env file
     set -a; source $SCRIPT_DIR/.env;
-    echo -e "\e[1;36m....env file version $ENV_VERSION used\e[0m"
-    echo -e "\e[1;36m....Install Flatpak? $FLATPAK_INSTALL used\e[0m"
-    echo -e "\e[1;36m....Install Flatpak Utilities $FLATPAK_UTILS used\e[0m"
-    echo -e "\e[1;36m....Install Debian Packages? $APT_UTILS used\e[0m"
+    echo -e "\e[1;35m-------------------------------------------------------------------\e[0m"
+    echo -e "\e[1;35menv file version $ENV_VERSION\e[0m"
+    echo -e
+    echo -e "\e[1;35mAdding contrib and non-free repositories? $APT_CONFIGURE\e[0m"
+    echo -e "\e[1;35mInstalling latest updates from Debian? $UPDATES_INSTALL\e[0m"
+    echo -e "\e[1;35mConfiguration of Linux? $NIX_CONFIGURE\e[0m"
+    echo -e "\e[1;35mInstall Flatpak? $FLATPAK_INSTALL\e[0m"
+    echo -e "\e[1;35mInstall Flatpak Utilities $FLATPAK_UTILS\e[0m"
+    echo -e "\e[1;35mInstall Debian Packages? $APT_UTILS\e[0m"
+    echo -e "\e[1;35mConfigure Minimize and Maximize buttons on Windows? $MM_BUTTONS_CONFIGURE\e[0m"
+    echo -e "\e[1;35m-------------------------------------------------------------------\e[0m"
     
     # OS Version freedesktop.org and systemd
     . /etc/os-release
@@ -106,7 +113,7 @@ install_utils_apt() {
     echo -e "\e[32m .... Installing forensics tools\e[0m";
     sudo apt-get -y -qq install forensics-extra testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk;
     echo -e "\e[32m .... Installing system tools\e[0m";
-    sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor;
+    sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop;
     echo -e "\e[32m .... Installing user utils and other tools\e[0m";
     sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk git sshpass rclone rclone-browser;
 
@@ -153,6 +160,17 @@ install_utils_flatpak() {
 
     echo -e "\e[32m - install_utils_flatpak() finished\e[0m";
     /usr/bin/logger 'install_utils_flatpak() finished' -t 'Customizing Bookworm';
+}
+
+install_gnome_dash_to_panel() {
+    echo -e "\e[32m - install_gnome_dash_to_panel()\e[0m";
+    /usr/bin/logger 'install_gnome_dash_to_panel()' -t 'Customizing Bookworm';
+
+    # Requires log out then logon
+    apt-get -y -qq install gnome-shell-extension-dash-to-panel;
+
+    echo -e "\e[32m - install_gnome_dash_to_panel() finished\e[0m";
+    /usr/bin/logger 'install_gnome_dash_to_panel() finished' -t 'Customizing Bookworm';
 }
 
 configure_nix() {
@@ -217,6 +235,16 @@ configure_kb_shortcuts() {
     /usr/bin/logger 'configure_kb_shortcuts()' -t 'Customizing Bookworm';
 }
 
+configure_min_max_buttons() {
+    echo -e "\e[32m - configure_min_max_buttons()\e[0m";
+    /usr/bin/logger 'configure_min_max_buttons()' -t 'Customizing Bookworm';
+
+    gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+
+    echo -e "\e[32m - configure_min_max_buttons() finished\e[0m";
+    /usr/bin/logger 'configure_min_max_buttons() finished' -t 'Customizing Bookworm';
+}
+
 #################################################################################################################
 ## Main Routine                                                                                                 #
 #################################################################################################################
@@ -232,11 +260,20 @@ main() {
     if id -nG "$USERNAME" | grep -qw "$SUDOGROUP"; then
         echo -e "\e[32m - $USERNAME already  belongs to group: $SUDOGROUP, installation will continue using sudo\e[0m"
 
-        configure_nix;
+       # APT Repositories
+        if [ "$APT_CONFIGURE" == "Yes" ]; then
+          configure_nix;  
+        fi
 
-        configure_apt_repositories;
+        # APT Repositories
+        if [ "$APT_CONFIGURE" == "Yes" ]; then
+            configure_apt_repositories;
+        fi
 
-        install_updates;
+        # Install updates from repositories
+        if [ "$UPDATES_INSTALL" == "Yes" ]; then
+            install_updates;
+        fi
 
         # Flatpak
         if [ "$FLATPAK_INSTALL" == "Yes" ]; then
@@ -254,6 +291,16 @@ main() {
         # Gnome Keyboard Shortcuts
         if [ "$KB_SHORTCUTS" == "Yes" ]; then
             configure_kb_shortcuts;
+        fi
+
+        # Gnome Dash to Panel Extension
+        if [ "$DASH_TO_PANEL" == "Yes" ]; then
+            install_gnome_dash_to_panel;
+        fi
+
+        # Gnome show minimize and maximize buttons
+        if [ "$MM_BUTTONS_CONFIGURE" == "Yes" ]; then
+            configure_min_max_buttons;
         fi
 
     # Cannot sudo

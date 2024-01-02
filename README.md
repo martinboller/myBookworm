@@ -8,6 +8,11 @@ Install some basics on Debian 12 Bookworm
   - Installs some Networking, Forensics, Development, and System utilities
 
 ## Latest changes ##
+
+### 2024-01-02 - Dash to panel ###
+ - Installing the Dash-to-Panel Gnome Extension
+ - Adding minimize and maximize buttons to windows
+ 
 ### 2024-01-01 - Initial version ###
 - Adds the currently logged on user to the sudo group (if necessary)
 - Installing Flatpak, Gnome Software Flatpak plugin, and adds flathub repository.
