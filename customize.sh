@@ -66,7 +66,9 @@ configure_env() {
     echo -e "\e[1;35mInstall Flatpak? $FLATPAK_INSTALL\e[0m"
     echo -e "\e[1;35mInstall Flatpak Utilities $FLATPAK_UTILS\e[0m"
     echo -e "\e[1;35mInstall Debian Packages? $APT_UTILS\e[0m"
+    echo -e "\e[1;35mInstall golang? $GO_INSTALL\e[0m"
     echo -e "\e[1;35mConfigure Minimize and Maximize buttons on Windows? $MM_BUTTONS_CONFIGURE\e[0m"
+    echo -e "\e[1;35mConfigure access to Serial Ports for $USERNAME? $CONFIGURE_SERIAL\e[0m"
     echo -e
     echo -e "\e[1;35mGNOME version: $GNOME_VERSION\e[0m"
     #echo -e "\e[1;35mGNOME version major: $GNOME_VERSION_MAJOR\e[0m"
@@ -121,12 +123,14 @@ install_utils_apt() {
 
     # NETTOOLS_INSTALL
     if [ "$NETTOOLS_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing Network tools from Debian repository ' -t 'Customizing Bookworm';
         echo -e "\e[36m .... Installing network tools\e[0m";
         sudo apt-get -y -qq install ipcalc-ng wireshark tcpdump nmap ncat ngrep ethtool aircrack-ng whois dnsutils > /dev/null 2>&1;
     fi
 
     # FORTOOLS_INSTALL
     if [ "$FORTOOLS_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing Forensics tools from Debian repository ' -t 'Customizing Bookworm';
         echo -e "\e[36m .... Installing forensics tools\e[0m";
         sudo apt-get -y -qq install forensics-all > /dev/null 2>&1;
         sudo apt-get -y -qq install testdisk sleuthkit geoip-bin geoip-database geoipupdate binwalk > /dev/null 2>&1;
@@ -134,18 +138,21 @@ install_utils_apt() {
 
     # SYSTOOLS_INSTALL
     if [ "$SYSTOOLS_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing System tools from Debian repository ' -t 'Customizing Bookworm';
         echo -e "\e[36m .... Installing system tools\e[0m";
         sudo apt-get -y -qq install gparted wget nano p7zip p7zip-full unzip dconf-editor htop > /dev/null 2>&1;
     fi
 
     # USERTOOLS_INSTALL
     if [ "$USERTOOLS_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing User tools from Debian repository ' -t 'Customizing Bookworm';
         echo -e "\e[36m .... Installing user utils and other tools\e[0m";
         sudo apt-get -y -qq install curl transmission-gtk vlc ffmpeg libavcodec-extra default-jdk sshpass rclone rclone-browser tldr > /dev/null 2>&1;
     fi
 
     # DEVTOOLS_INSTALL
     if [ "$DEVTOOLS_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing Development tools from Debian repository ' -t 'Customizing Bookworm';
         echo -e "\e[36m .... Installing development tools\e[0m";
         sudo apt-get -y -qq install git devscripts build-essential software-properties-common gnupg2 dirmngr --install-recommends > /dev/null 2>&1;
         # Required to build Proxmark and others
@@ -154,6 +161,7 @@ install_utils_apt() {
     
     # PYTHON_INSTALL
     if [ "$PYTHON_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing Python stuff from Debian repository ' -t 'Customizing Bookworm';
         echo -e "\e[36m .... Installing Python tools\e[0m";   
         sudo apt-get -y -qq install python3 python3-pip python3-setuptools python3-gnupg python3-venv libpython3-dev > /dev/null 2>&1;
     fi
@@ -182,6 +190,7 @@ install_utils_flatpak() {
 
     # FP_DEVTOOLS_INSTALL
     if [ "$FP_DEVTOOLS_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing Flatpak Devtools' -t 'Customizing Bookworm';
         echo -e "\e[36m .... Installing vs-codium\e[0m";
         flatpak --assumeyes install com.vscodium.codium > /dev/null 2>&1;
         echo -e "\e[36m .... installing ImHex Hex Editor\e[0m";
@@ -192,6 +201,7 @@ install_utils_flatpak() {
 
     # FP_USERTOOLS_INSTALL
     if [ "$FP_USERTOOLS_INSTALL" == "Yes" ]; then
+        /usr/bin/logger 'installing Flatpak Usertools' -t 'Customizing Bookworm';
         echo -e "\e[36m .... installing BitWarden\e[0m";
         flatpak --assumeyes install com.bitwarden.desktop > /dev/null 2>&1;
         echo -e "\e[36m .... installing Calibre\e[0m";
@@ -300,7 +310,8 @@ configure_serial_access() {
     /usr/bin/logger 'configure_serial_access()' -t 'Customizing Bookworm';
 
     echo -e "\e[36m .... Adding User: $USERNAME to group $SERIALGROUP\e[0m";
-    su root /sbin/adduser $USERNAME $SERIALGROUP
+    echo -e "\e[35m"
+    echo -e "\e[35m .... $(sudo /sbin/adduser $USERNAME $SERIALGROUP)\e[0m"
 
     echo -e "\e[32m - configure_serial_access() finished\e[0m";
     /usr/bin/logger 'configure_serial_access() finished' -t 'Customizing Bookworm';
@@ -365,6 +376,7 @@ install_golang() {
 
     mkdir -p /tmp/golang/;
     cd /tmp/golang/;
+    echo -e "\e[1;36m .... Downloading golang $GO_URL\e[0m";
     wget -q $GO_URL -O /tmp/golang/go.tar.gz;
     echo -e "\e[1;36m .... Removing previous install of golang\e[0m";
     /usr/bin/logger 'Removing previous install of golang' -t 'Customizing Bookworm';
@@ -404,6 +416,10 @@ main() {
 
     if id -nG "$USERNAME" | grep -qw "$SUDOGROUP"; then
         echo -e "\e[32m - $USERNAME already  belongs to group: $SUDOGROUP, installation will continue using sudo\e[0m"
+        # Get sudo password
+        echo -e "\e[35m - Sudo password needed"
+        echo -e "\e[35m - $(sudo echo .)\e[0m"
+
 
         # APT Repositories
         if [ "$APT_CONFIGURE" == "Yes" ]; then

@@ -9,6 +9,11 @@ Install some basics on Debian 12 Bookworm
 
 ## Latest changes ##
 
+### 2024-01-03 - Go and Serial Ports ###
+ - Installing golang
+ - Configure access to serial port
+ - sudo password message.
+
 ### 2024-01-02 - Dash to panel ###
  - Installing the Dash-to-Panel Gnome Extension
  - Adding minimize and maximize buttons to windows
