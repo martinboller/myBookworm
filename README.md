@@ -23,3 +23,17 @@ Install some basics on Debian 12 Bookworm
 - Several Debian APT-packages in the following categories: Network Tools, Forensics Tools, Systems Tools, and User Tools.
 - Adds the contrib, non-free, and firmware-non-free debian repositories.
 - Keyboard shortcuts for gnome-terminal (Super + t) and gnome-disks (Super + d)
+
+
+### Usage
+**Clone the repo**
+$ git clone https://github.com/martinboller/myBookworm.git
+
+**cd into the directory**
+$ cd /myBookworm/
+
+**Edit .env and select what to install/configure**
+$ vi .env
+
+**Then run the shell script**
+$ ./customize.sh

@@ -148,12 +148,14 @@ install_utils_apt() {
     if [ "$DEVTOOLS_INSTALL" == "Yes" ]; then
         echo -e "\e[36m .... Installing development tools\e[0m";
         sudo apt-get -y -qq install git devscripts build-essential software-properties-common gnupg2 dirmngr --install-recommends > /dev/null 2>&1;
+        # Required to build Proxmark and others
+        sudo apt-get -qq -y install --no-install-recommends ca-certificates pkg-config libreadline-dev gcc-arm-none-eabi libnewlib-dev qtbase5-dev libbz2-dev liblz4-dev libbluetooth-dev libssl-dev > /dev/null 2>&1;
     fi
     
     # PYTHON_INSTALL
     if [ "$PYTHON_INSTALL" == "Yes" ]; then
         echo -e "\e[36m .... Installing Python tools\e[0m";   
-        sudo apt-get -y -qq install python3 python3-pip python3-setuptools python3-gnupg python3-venv > /dev/null 2>&1;
+        sudo apt-get -y -qq install python3 python3-pip python3-setuptools python3-gnupg python3-venv libpython3-dev > /dev/null 2>&1;
     fi
 
     echo -e "\e[32m - install_utils_apt() finished\e[0m";
@@ -245,7 +247,7 @@ configure_sudo() {
     
     echo -e "\e[36m .... Adding user: $USERNAME to group $SUDOGROUP\e[0m";
     echo -e "\e[36m .... You must provide the root password, then logout and rerun script\e[0m";
-    su root /sbin/addgroup $USERNAME $SUDOGROUP
+    su root /sbin/adduser $USERNAME $SUDOGROUP
     
     echo -e "\e[32m - configure_sudo() finished\e[0m";
     /usr/bin/logger 'configure_sudo() finished' -t 'Customizing Bookworm';
@@ -291,6 +293,17 @@ configure_microsoft_apt_repository() {
 
     echo -e "\e[32m - configure_microsoft_apt_repository() finished\e[0m";
     /usr/bin/logger 'configure_microsoft_apt_respository() finished' -t 'Customizing Bookworm';
+}
+
+configure_serial_access() {
+    echo -e "\e[32m - configure_serial_access()\e[0m";
+    /usr/bin/logger 'configure_serial_access()' -t 'Customizing Bookworm';
+
+    echo -e "\e[36m .... Adding User: $USERNAME to group $SERIALGROUP\e[0m";
+    su root /sbin/adduser $USERNAME $SERIALGROUP
+
+    echo -e "\e[32m - configure_serial_access() finished\e[0m";
+    /usr/bin/logger 'configure_serial_access() finished' -t 'Customizing Bookworm';
 }
 
 install_pwsh() {
@@ -346,6 +359,37 @@ configure_min_max_buttons() {
     /usr/bin/logger 'configure_min_max_buttons() finished' -t 'Customizing Bookworm';
 }
 
+install_golang() {
+    echo -e "\e[32m - install_golang()\e[0m";
+    /usr/bin/logger 'install_golang()' -t 'Customizing Bookworm';
+
+    mkdir -p /tmp/golang/;
+    cd /tmp/golang/;
+    wget -q $GO_URL -O /tmp/golang/go.tar.gz;
+    echo -e "\e[1;36m .... Removing previous install of golang\e[0m";
+    /usr/bin/logger 'Removing previous install of golang' -t 'Customizing Bookworm';
+    sudo rm -rf /usr/local/go;
+    echo -e "\e[1;36m .... Opening and extracting golang tarball\e[0m";
+    /usr/bin/logger 'Open and extract the golang tarball' -t 'Customizing Bookworm';
+    sudo tar -C /usr/local -zxf go.tar.gz > /dev/null 2>&1;
+    sync;
+
+    if test -f "/etc/profile.d/go_lang.sh"; then
+        echo -e "\e[1;36m .... GO path already configured\e[0m";        
+    else
+        echo -e "\e[1;36m .... Configuring GO path\e[0m";        
+        echo "export PATH=$PATH:/usr/local/go/bin" | sudo tee /etc/profile.d/go_lang.sh  > /dev/null 2>&1;
+        sudo chmod 644 /etc/profile.d/go_lang.sh
+    fi
+
+    echo -e
+    echo -e "\e[36m .... Installed $(/usr/local/go/bin/go version)"
+    /usr/bin/logger "Installed $(/usr/local/go/bin/go version)" -t 'Customizing Bookworm';
+
+    echo -e "\e[32m - install_golang()\e[0m";
+    /usr/bin/logger 'install_golang()' -t 'Customizing Bookworm';
+}
+
 #################################################################################################################
 ## Main Routine                                                                                                 #
 #################################################################################################################
@@ -361,7 +405,7 @@ main() {
     if id -nG "$USERNAME" | grep -qw "$SUDOGROUP"; then
         echo -e "\e[32m - $USERNAME already  belongs to group: $SUDOGROUP, installation will continue using sudo\e[0m"
 
-       # APT Repositories
+        # APT Repositories
         if [ "$APT_CONFIGURE" == "Yes" ]; then
           configure_nix;  
         fi
@@ -402,6 +446,16 @@ main() {
         # Gnome show minimize and maximize buttons
         if [ "$MM_BUTTONS_CONFIGURE" == "Yes" ]; then
             configure_min_max_buttons;
+        fi
+
+        # GOLANG
+        if [ "$GO_INSTALL" == "Yes" ]; then
+            install_golang;            
+        fi
+
+        # Serial ports
+        if [ "$CONFIGURE_SERIAL" == "Yes" ]; then
+            configure_serial_access;            
         fi
 
         # Microsoft Debian Packages and PowerShell
