@@ -5,8 +5,8 @@
 # Author:       Martin Boller                                       #
 #                                                                   #
 # Email:        martin@bollers.dk                                   #
-# Last Update:  2023-12-30                                          #
-# Version:      1.50                                                #
+# Last Update:  2024-01-03                                          #
+# Version:      1.60                                                #
 #                                                                   #
 # Changes:  Tested on Debian 12 (Bookworm)                          #
 #                                                                   #
@@ -256,8 +256,8 @@ configure_sudo() {
     /usr/bin/logger 'configure_sudo()' -t 'Customizing Bookworm';
     
     echo -e "\e[36m .... Adding user: $USERNAME to group $SUDOGROUP\e[0m";
-    echo -e "\e[36m .... You must provide the root password, then logout and rerun script\e[0m";
-    su root /sbin/adduser $USERNAME $SUDOGROUP
+    echo -e "\e[35m .... You must provide the root password, then logout and rerun script";
+    echo -e "\e[35m$(su - root -c "/sbin/adduser $USERNAME $SUDOGROUP")\e[0m"
     
     echo -e "\e[32m - configure_sudo() finished\e[0m";
     /usr/bin/logger 'configure_sudo() finished' -t 'Customizing Bookworm';
@@ -308,11 +308,14 @@ configure_microsoft_apt_repository() {
 configure_serial_access() {
     echo -e "\e[32m - configure_serial_access()\e[0m";
     /usr/bin/logger 'configure_serial_access()' -t 'Customizing Bookworm';
-
-    echo -e "\e[36m .... Adding User: $USERNAME to group $SERIALGROUP\e[0m";
-    echo -e "\e[35m"
-    echo -e "\e[35m .... $(sudo /sbin/adduser $USERNAME $SERIALGROUP)\e[0m"
-
+   
+    if id -nG "$USERNAME" | grep -qw "$SERIALGROUP"; then
+        echo -e "\e[32m - $USERNAME already  belongs to group: $SERIALGROUP, nothing to do\e[0m"
+    else
+        echo -e "\e[36m .... Adding User: $USERNAME to group $SERIALGROUP";
+        echo -e "\e[35m .... $(sudo /sbin/adduser $USERNAME $SERIALGROUP)\e[0m"
+    fi
+   
     echo -e "\e[32m - configure_serial_access() finished\e[0m";
     /usr/bin/logger 'configure_serial_access() finished' -t 'Customizing Bookworm';
 }
@@ -387,9 +390,9 @@ install_golang() {
     sync;
 
     if test -f "/etc/profile.d/go_lang.sh"; then
-        echo -e "\e[1;36m .... GO path already configured\e[0m";        
+        echo -e "\e[1;36m .... golang path already configured\e[0m";        
     else
-        echo -e "\e[1;36m .... Configuring GO path\e[0m";        
+        echo -e "\e[1;36m .... Configuring golang path\e[0m";        
         echo "export PATH=$PATH:/usr/local/go/bin" | sudo tee /etc/profile.d/go_lang.sh  > /dev/null 2>&1;
         sudo chmod 644 /etc/profile.d/go_lang.sh
     fi
