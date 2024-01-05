@@ -5,8 +5,8 @@
 # Author:       Martin Boller                                       #
 #                                                                   #
 # Email:        martin@bollers.dk                                   #
-# Last Update:  2024-01-03                                          #
-# Version:      1.60                                                #
+# Last Update:  2024-01-05                                          #
+# Version:      1.61                                                #
 #                                                                   #
 # Changes:  Tested on Debian 12 (Bookworm)                          #
 #                                                                   #
@@ -357,7 +357,12 @@ configure_kb_shortcuts() {
     echo -e "\e[36m .... set gnome-disks as command to run\e[0m";
     # set command to run
     gsettings set org.gnome.settings-daemon.plugins.media-keys.custom-keybinding:/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/myDisks/ command '/usr/bin/gnome-disks'
-    
+
+    if [ "$MENU_IS_COMPOSE" == "Yes" ]; then
+        # configure menu key as compose
+        gsettings set org.gnome.desktop.input-sources xkb-options "['menu:ctrl_shift_U', 'compose:menu']"
+    fi
+
     echo -e "\e[32m - configure_kb_shortcuts() finshed\e[0m";
     /usr/bin/logger 'configure_kb_shortcuts() finished' -t 'Customizing Bookworm';
 }
