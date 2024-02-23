@@ -235,7 +235,9 @@ install_gnome_dash_to_panel() {
     echo -e "\e[36m .... installing the Dash-to-Panel Gnome Extension\e[0m";
     # Requires log out then logon
     sudo apt-get -y -qq install gnome-shell-extension-dash-to-panel;
-
+    DASH_UUID="$(gnome-extensions list | grep dash)"
+    gnome-extensions enable $DASH_UUID
+     
     echo -e "\e[32m - install_gnome_dash_to_panel() finished\e[0m";
     /usr/bin/logger 'install_gnome_dash_to_panel() finished' -t 'Customizing Bookworm';
 }
