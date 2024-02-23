@@ -386,7 +386,9 @@ install_golang() {
     mkdir -p /tmp/golang/;
     cd /tmp/golang/;
     echo -e "\e[1;36m .... Downloading golang $GO_URL\e[0m";
-    wget -q $GO_URL -O /tmp/golang/go.tar.gz;
+    export GO_LATEST="$(curl $GO_URL | head -n1)";
+    export GO_DOWNLOAD="https://go.dev/dl/$GO_LATEST.linux-amd64.tar.gz"
+    wget -q "$GO_DOWNLOAD" -O /tmp/golang/go.tar.gz;
     echo -e "\e[1;36m .... Removing previous install of golang\e[0m";
     /usr/bin/logger 'Removing previous install of golang' -t 'Customizing Bookworm';
     sudo rm -rf /usr/local/go;
