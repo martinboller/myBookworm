@@ -258,7 +258,8 @@ configure_sudo() {
     echo -e "\e[36m .... Adding user: $USERNAME to group $SUDOGROUP\e[0m";
     echo -e "\e[35m .... You must provide the root password, then logout and rerun script";
     echo -e "\e[35m$(su - root -c "/sbin/adduser $USERNAME $SUDOGROUP")\e[0m"
-    
+    echo -e "\e[35m$("/usr/bin/newgrp $SUDOGROUP")\e[0m"
+        
     echo -e "\e[32m - configure_sudo() finished\e[0m";
     /usr/bin/logger 'configure_sudo() finished' -t 'Customizing Bookworm';
 }
@@ -495,7 +496,7 @@ main() {
     else
         echo -e "\e[1;36m$USERNAME does not belong to group $SUDOGROUP, please provide root password\e[0m"
         configure_sudo;
-        echo -e "\e[1;31mYou must logout and then back in again and execute this script once more\e[0m"
+        echo -e "\e[1;31mNow rerun this script\e[0m"
     fi
 
     # Show finishing message
