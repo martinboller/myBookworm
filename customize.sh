@@ -427,6 +427,8 @@ main() {
 
     if id -nG "$USERNAME" | grep -qw "$SUDOGROUP"; then
         echo -e "\e[32m - $USERNAME already  belongs to group: $SUDOGROUP, installation will continue using sudo\e[0m"
+        # Ensuring that sudo group membership is active.
+        /usr/bin/newgrp $SUDOGROUP;
         # Get sudo password
         echo -e "\e[35m - Sudo password needed"
         echo -e "\e[35m - $(sudo echo .)\e[0m"
