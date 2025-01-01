@@ -214,8 +214,8 @@ install_utils_flatpak() {
         flatpak --assumeyes install com.mattermost.Desktop > /dev/null 2>&1;
         echo -e "\e[36m .... installing Discord\e[0m";
         flatpak --assumeyes install com.discordapp.Discord > /dev/null 2>&1;
-        echo -e "\e[36m .... installing Fluent Reader\e[0m";
-        flatpak --assumeyes install me.hyliu.fluentreader > /dev/null 2>&1;
+        echo -e "\e[36m .... installing RSS Reader NewsFlash\e[0m";
+        flatpak --assumeyes install io.gitlab.news_flash.NewsFlash > /dev/null 2>&1;
         echo -e "\e[36m .... installing Signal Desktop\e[0m";
         flatpak --assumeyes install org.signal.Signal > /dev/null 2>&1;
         echo -e "\e[36m .... installing Authenticator App\e[0m";
@@ -427,7 +427,7 @@ main() {
     # Configure variables from .env-file
     configure_env;
 
-    if id -nG "$USERNAME" | grep -qw "$SUDOGROUP"; then
+    if id -nG "$USERNAME" | grep -q "$SUDOGROUP"; then
         echo -e "\e[32m - $USERNAME already  belongs to group: $SUDOGROUP, installation will continue using sudo\e[0m"
         # Ensuring that sudo group membership is active.
         /usr/bin/newgrp $SUDOGROUP;
